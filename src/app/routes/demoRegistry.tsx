@@ -8,6 +8,7 @@ export interface DemoRoute {
   owner: string
   status: 'Draft' | 'Ready' | 'Archived'
   component: LazyExoticComponent<ComponentType>
+  help?: () => Promise<{ default: string }>
 }
 
 export const demos: DemoRoute[] = [
@@ -19,5 +20,6 @@ export const demos: DemoRoute[] = [
     owner: 'DTC',
     status: 'Ready',
     component: lazy(() => import('../../demos/return-exchange')),
+    help: () => import('../../demos/return-exchange/help.md?raw'),
   },
 ]

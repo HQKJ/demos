@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { Link } from 'react-router'
+import { PageHelp } from '../help/PageHelp'
 import type { DemoRoute } from '../routes/demoRegistry'
 
 interface DemoShellProps {
@@ -24,6 +25,7 @@ export function DemoShell({ demo }: DemoShellProps) {
       <Suspense fallback={<DemoLoading />}>
         <DemoComponent />
       </Suspense>
+      <PageHelp loadMarkdown={demo.help} />
     </div>
   )
 }

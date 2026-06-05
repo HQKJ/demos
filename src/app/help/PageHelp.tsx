@@ -1,17 +1,39 @@
 import { useEffect, useState } from 'react'
 import { CircleHelp, X } from 'lucide-react'
-import { useLocation } from 'react-router'
-import { getHelpMarkdown } from './helpContent'
 import { MarkdownContent } from './MarkdownContent'
 
-export function PageHelp() {
+interface PageHelpProps {
+  loadMarkdown?: () => Promise<{ default: string }>
+}
+
+export function PageHelp({ loadMarkdown }: PageHelpProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const { pathname } = useLocation()
-  const markdown = getHelpMarkdown(pathname)
+  const [markdown, setMarkdown] = useState('')
 
   useEffect(() => {
     setIsOpen(false)
-  }, [pathname])
+    setMarkdown('')
+  }, [loadMarkdown])
+
+  useEffect(() => {
+    if (!isOpen || markdown || !loadMarkdown) return
+
+    let isMounted = true
+
+    loadMarkdown().then((module) => {
+      if (isMounted) {
+        setMarkdown(module.default)
+      }
+    })
+
+    return () => {
+      isMounted = false
+    }
+  }, [isOpen, loadMarkdown, markdown])
+
+  if (!loadMarkdown) {
+    return null
+  }
 
   return (
     <>
@@ -42,7 +64,11 @@ export function PageHelp() {
             </button>
           </div>
           <div className="max-h-[calc(min(70vh,520px)-57px)] overflow-y-auto px-5 py-4">
-            <MarkdownContent markdown={markdown} />
+            {markdown ? (
+              <MarkdownContent markdown={markdown} />
+            ) : (
+              <div className="text-sm text-gray-500">加载中...</div>
+            )}
           </div>
         </aside>
       )}
